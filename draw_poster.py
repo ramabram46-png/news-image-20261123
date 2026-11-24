@@ -69,6 +69,113 @@ def kicker(d, x, y, text, size=13):
     d.text((x, y), text, font=F(SANS_B, size), fill=RED)
 
 
+# ---------------- world locator map ----------------
+# Simplified continent outlines in (lon, lat); equirectangular projection.
+MAP_NAVY = (35, 48, 72)
+
+CONTINENTS = [
+    # North America
+    [(-168, 66), (-150, 70), (-135, 69), (-125, 71), (-110, 73), (-95, 80),
+     (-85, 76), (-80, 73), (-70, 62), (-60, 55), (-55, 47), (-60, 45),
+     (-65, 44), (-70, 42), (-74, 39), (-76, 35), (-80, 32), (-81, 26),
+     (-84, 30), (-90, 21), (-97, 16), (-94, 17), (-100, 20), (-105, 20),
+     (-110, 24), (-114, 29), (-120, 34), (-124, 40), (-124, 48), (-130, 55),
+     (-145, 60), (-158, 58), (-168, 66)],
+    # Greenland
+    [(-55, 60), (-45, 60), (-40, 65), (-30, 68), (-20, 70), (-25, 76),
+     (-40, 80), (-55, 76), (-58, 70), (-55, 60)],
+    # South America
+    [(-79, 9), (-72, 12), (-62, 11), (-55, 6), (-52, 4), (-50, 0),
+     (-44, -3), (-38, -5), (-35, -9), (-35, -15), (-40, -22), (-48, -28),
+     (-55, -35), (-62, -41), (-66, -47), (-68, -52), (-70, -54), (-73, -50),
+     (-73, -40), (-72, -30), (-70, -20), (-75, -15), (-80, -6), (-81, 0),
+     (-80, 5), (-79, 9)],
+    # Europe
+    [(-10, 36), (-9, 43), (-2, 44), (-1, 46), (-4, 48), (-1, 49), (2, 51),
+     (5, 53), (8, 55), (10, 57), (12, 56), (18, 56), (21, 55), (24, 58),
+     (28, 60), (30, 62), (32, 60), (30, 55), (28, 50), (24, 45), (22, 40),
+     (19, 42), (15, 44), (12, 44), (8, 44), (3, 43), (0, 39), (-2, 37),
+     (-6, 36), (-10, 36)],
+    # United Kingdom
+    [(-5, 50), (-3, 53), (-5, 56), (-3, 58), (-1, 57), (0, 53), (-2, 51),
+     (-5, 50)],
+    # Africa
+    [(-17, 15), (-16, 21), (-10, 29), (-5, 32), (0, 36), (10, 37),
+     (20, 32), (25, 32), (30, 31), (32, 28), (34, 28), (37, 22), (39, 18),
+     (43, 12), (48, 11), (51, 12), (46, 5), (42, 0), (40, -5), (38, -12),
+     (36, -18), (33, -26), (28, -33), (20, -35), (17, -32), (15, -27),
+     (13, -20), (12, -12), (12, -6), (9, 0), (9, 4), (4, 6), (-3, 5),
+     (-8, 5), (-13, 8), (-17, 12), (-17, 15)],
+    # Asia
+    [(30, 62), (35, 65), (40, 68), (50, 69), (60, 69), (70, 72), (80, 73),
+     (90, 75), (100, 77), (110, 74), (120, 73), (130, 72), (140, 72),
+     (150, 70), (158, 66), (162, 60), (160, 58), (156, 52), (150, 59),
+     (142, 55), (140, 50), (135, 45), (130, 42), (127, 40), (122, 39),
+     (120, 35), (118, 30), (115, 23), (110, 20), (108, 12), (105, 9),
+     (103, 7), (100, 6), (98, 10), (95, 16), (92, 21), (89, 22), (86, 20),
+     (82, 17), (80, 13), (77, 8), (75, 10), (72, 20), (68, 23), (65, 25),
+     (61, 25), (58, 26), (55, 26), (52, 28), (50, 29), (48, 30), (45, 29),
+     (42, 29), (40, 32), (38, 36), (36, 36), (33, 38), (30, 41), (28, 45),
+     (27, 50), (26, 55), (28, 60), (30, 62)],
+    # Japan
+    [(130, 31), (132, 33), (135, 34), (137, 35), (140, 36), (141, 39),
+     (141, 42), (140, 44), (143, 42), (142, 39), (140, 35), (137, 34),
+     (134, 33), (131, 31)],
+    # Australia
+    [(113, -22), (114, -30), (115, -33), (118, -35), (124, -33), (129, -32),
+     (132, -32), (136, -35), (138, -35), (140, -38), (145, -38), (147, -39),
+     (150, -37), (153, -32), (153, -27), (150, -23), (146, -19), (142, -11),
+     (140, -17), (136, -15), (132, -12), (128, -14), (124, -17), (120, -20),
+     (115, -21), (113, -22)],
+    # Sumatra / Borneo / Java / New Guinea (small)
+    [(95, 5), (100, 0), (104, -3), (106, -6), (104, -5), (100, 2), (95, 5)],
+    [(109, 1), (113, 4), (117, 6), (119, 1), (117, -3), (113, -4),
+     (110, -2), (109, 1)],
+    [(105, -6), (110, -7), (114, -8), (114, -7), (108, -6), (105, -6)],
+    [(131, -1), (136, -2), (141, -3), (146, -6), (147, -8), (141, -8),
+     (136, -7), (131, -3), (131, -1)],
+]
+
+# (lon, lat, label number, circle offset dx, dy) — offsets hand-tuned so the
+# numbered circles never collide at this scale.
+PINS = [
+    (-95, 39, "1", 0, -14),    # USA — Nvidia / markets
+    (20, 32, "2", -16, 12),    # Benghazi, Libya — warship sunk
+    (30, 37, "3", 16, -10),    # Antalya, Turkey — COP31
+    (106, -6, "4", 0, -14),    # Serang, Indonesia — factory fire
+    (31, 50, "5", -16, -12),   # Kyiv, Ukraine
+    (4, 51, "6", -14, 10),     # Brussels, Belgium — strike
+    (127, 38, "7", 14, -12),   # Seoul, South Korea — Kospi
+]
+
+
+def draw_map(d, x0, y0, w, h):
+    """Stylised dark-navy world map with numbered red pins."""
+    lon0, lon1 = -170, 192
+    lat0, lat1 = 82, -56
+
+    def proj(lon, lat):
+        return (x0 + (lon - lon0) / (lon1 - lon0) * w,
+                y0 + (lat0 - lat) / (lat0 - lat1) * h)
+
+    for poly in CONTINENTS:
+        d.polygon([proj(lon, lat) for lon, lat in poly], fill=MAP_NAVY)
+    for lon, lat, num, dx, dy in PINS:
+        px, py = proj(lon, lat)
+        cx, cy = px + dx, py + dy
+        # leader line from the true spot to its number circle
+        d.line([(px, py), (cx, cy)], fill=RED, width=1)
+        # dot at the true spot
+        d.ellipse([px - 4, py - 4, px + 4, py + 4], fill=RED,
+                  outline=(255, 255, 255))
+        # numbered circle
+        d.ellipse([cx - 7, cy - 7, cx + 7, cy + 7], fill=RED,
+                  outline=(255, 255, 255))
+        nf = F(SANS_B, 9)
+        d.text((cx - d.textlength(num, font=nf) / 2, cy - 5),
+               num, font=nf, fill=(255, 255, 255))
+
+
 def main():
     img = Image.new("RGB", (W, H), PAPER)
     d = ImageDraw.Draw(img)
@@ -161,11 +268,11 @@ def main():
          "Russian strikes killed at least 15 around Kyiv; a boy was pulled "
          "alive from the rubble. Drones also hit homes and a UN building "
          "in Khartoum."),
-        ("SCIENCE  ·  MATH & SPACE",
-         "AI \u2018PROVES\u2019 RIEMANN; PROBE AT MERCURY",
-         "Anthropic says AI helped prove the Riemann hypothesis \u2014 but "
-         "can humans verify the proof? BepiColombo entered Mercury orbit "
-         "after 8 years."),
+        ("BELGIUM  ·  WASHINGTON  ·  SEOUL",
+         "FLIGHTS GROUNDED IN BELGIUM; DEMS WIN 258",
+         "Strike cancels all Brussels flights 07:00\u201321:00; Charleroi "
+         "all day. Democrats take 258 House seats, most since 1992. "
+         "Kospi -3.3%."),
     ]
     for x, (kick, head, body) in zip(xs, cards):
         kicker(d, x, y, kick, 12)
@@ -173,7 +280,7 @@ def main():
         para(d, x, y + 70, body, F(SANS, 14), c3, 18)
 
     # ---------------- numbers band ----------------
-    by0, by1 = 608, 684
+    by0, by1 = 604, 668
     d.rectangle([M, by0, W - M, by1], fill=BAND)
     nums = [
         ("+31%", "NVIDIA, MONDAY"),
@@ -181,7 +288,7 @@ def main():
         ("7", "NAVAL DRONES"),
         ("24", "DEAD IN SERANG"),
         ("4.0%", "EURO INFLATION"),
-        ("$61K", "BITCOIN REBOUNDS"),
+        ("-3.3%", "KOSPI SELLS OFF"),
     ]
     cell = CW / 6
     for i, (val, lab) in enumerate(nums):
@@ -195,27 +302,33 @@ def main():
         if i:
             vline(d, M + cell * i, by0 + 12, by1 - 12, color=BAND_DIV)
 
-    # ---------------- timeline ----------------
-    y = 692
+    # ---------------- timeline + world map ----------------
+    y = 676
     hline(d, M, W - M, y)
-    d.text((M, y + 8), "THE WEEKEND THAT LED HERE",
+    # timeline, left column, stacked rows
+    d.text((M, y + 6), "THE WEEKEND THAT LED HERE",
            font=F(SANS_B, 13), fill=INK)
-    ty = y + 28
-    tcell = CW / 3
-    timeline = [
-        ("SAT 21 NOV", "Fire breaks out at the Serang candy factory"),
-        ("SUN 22 NOV", "COP31 collapses in Antalya, no deal"),
+    tl = [
+        ("SAT 21 NOV", "Serang candy factory fire breaks out"),
+        ("SUN 22 NOV", "Democrats reach 258 seats; COP31 collapses"),
         ("MON 23 NOV", "Huang returns; warship sunk off Libya"),
     ]
-    for i, (dt, txt) in enumerate(timeline):
-        x = M + tcell * i
-        d.text((x, ty), dt, font=F(SANS_B, 13), fill=RED)
-        para(d, x, ty + 18, txt, F(SANS, 13), tcell - 16, 16)
-        if i:
-            vline(d, x - 10, ty, ty + 34)
+    for i, (dt, txt) in enumerate(tl):
+        yy = y + 28 + i * 24
+        d.text((M, yy), dt, font=F(SANS_B, 13), fill=RED)
+        d.text((M + 96, yy), txt, font=F(SANS, 13), fill=INK)
+    vline(d, 632, y + 6, 796)
+    # world map, right column
+    mx0, my0, mw, mh = 644, 714, 352, 82
+    d.text((mx0, y + 6), "WHERE IT HAPPENED",
+           font=F(SANS_B, 13), fill=INK)
+    d.text((mx0, y + 22),
+           "1 USA \u00b7 2 BENGHAZI \u00b7 3 ANTALYA \u00b7 4 SERANG \u00b7 5 KYIV \u00b7 6 BRUSSELS \u00b7 7 SEOUL",
+           font=F(SANS, 9), fill=GREY)
+    draw_map(d, mx0, my0, mw, mh)
 
     # ---------------- also on 23 november ----------------
-    y = 776
+    y = 804
     hline(d, M, W - M, y)
     d.text((M, y + 8), "ALSO ON 23 NOVEMBER",
            font=F(SANS_B, 15), fill=INK)
@@ -235,14 +348,10 @@ def main():
          "FBI top-10 fugitive arrested in Sinaloa, Mexico."),
         ("NHS trials AI screening",
          "AI to be tested in breast-cancer checks in Britain."),
-        ("Belgium flights grounded",
-         "Austerity strike halts departures nationwide."),
         ("Drone attack in Cucuta",
          "Three hurt, one an infant; 60 homes damaged."),
         ("893 kg cocaine seized",
          "London police find drugs hidden in orange boxes."),
-        ("Skubal\u2019s $450M deal",
-         "Nine years with the Mets, a record for a pitcher."),
     ]
     ay = y + 34
     colw2 = (CW - 24) / 2
@@ -256,7 +365,7 @@ def main():
 
     # ---------------- footer ----------------
     hline(d, M, W - M, 1000)
-    foot = "Sources: Reuters \u00b7 AP \u00b7 CNN \u00b7 BBC \u00b7 WSJ \u00b7 Dow Jones \u00b7 The Guardian \u2014 23 November 2026"
+    foot = "Sources: Reuters \u00b7 AP \u00b7 CNN \u00b7 BBC \u00b7 WSJ \u00b7 Dow Jones \u00b7 The Guardian \u00b7 Yonhap \u00b7 Korea JoongAng Daily \u2014 23 November 2026"
     d.text((M, 1006), foot, font=F(SANS, 12), fill=GREY)
     tag = "make.fun \u00b7 news-image-20261123"
     d.text((W - M - d.textlength(tag, font=F(SANS, 12)), 1006),
