@@ -22,20 +22,22 @@ newspaper front page: **"The World Today"**.
   fossil fuels.
 - **Indonesia factory fire.** 24 dead and about 30 missing after a blaze at
   a candy factory in Serang, Banten; plus 15 killed near Kyiv, a UN building
-  hit in Khartoum, an AI-assisted proof of the Riemann hypothesis, and
-  BepiColombo reaching Mercury after eight years.
+  hit in Khartoum, and a third card on Belgium's flight-grounding strike,
+  the Democrats' 258 House seats, and the Kospi's -3.3% selloff.
+- **World map.** A small dark-navy map with numbered pins for the seven
+  featured locations (USA, Benghazi, Antalya, Serang, Kyiv, Brussels,
+  Seoul), beside a weekend timeline.
 - **Numbers strip** (Nvidia +31%, Nasdaq +6.5%, 7 drones, 24 dead, euro
-  inflation 4.0%, Bitcoin $61K), a weekend timeline, and ten more stories:
+  inflation 4.0%, Kospi -3.3%), a weekend timeline, and eight more stories:
   EU sanctions round 22, US sanctions on Iranian shadow banks, the
   EU–Indonesia trade deal, the FBI's police-database hack probe, the capture
-  of "El Chapo Isidro", NHS AI screening trials, Belgium's flight-grounding
-  strike, a drone attack in Cucuta, 893 kg of cocaine seized in London, and
-  Tarik Skubal's record $450M Mets deal.
+  of "El Chapo Isidro", NHS AI screening trials, a drone attack in Cucuta,
+  and 893 kg of cocaine seized in London.
 
-Every fact in the image was researched from Reuters, AP, CNN, BBC, WSJ and
-Dow Jones coverage of 23 November 2026; sources are listed in
-`research-23-nov-2026.md` (kept in the run folder, not the repo) and in the
-image footer.
+Every fact in the image was researched from Reuters, AP, CNN, BBC, WSJ,
+Dow Jones, Yonhap and Korea JoongAng Daily coverage of 23 November 2026;
+sources are listed in `research-23-nov-2026.md` (committed in this repo)
+and in the image footer.
 
 ## How the entry works
 
